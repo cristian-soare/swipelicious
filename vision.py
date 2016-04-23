@@ -13,10 +13,9 @@ bask_window = (230, 1300)
 def get_ball(img):
 	img = img[ball_window[0]:ball_window[1], :]
 	circles = cv2.HoughCircles(img, cv.CV_HOUGH_GRADIENT, 1, 50, 
-		param1=50, param2=100, 
-		minRadius=0, maxRadius=int(img.shape[1] * 0.2))
-	circles = np.uint16(np.around(circles))
-	return (circles[0][0][0], circles[0][0][1] + ball_window[0])
+		param1=50, param2=30, 
+		minRadius=0, maxRadius=0)
+	return (int(circles[0][0][0]), int(circles[0][0][1] + ball_window[0]))
 
 def get_basket(img):
 	img = img[bask_window[0]:bask_window[1],:]
@@ -36,15 +35,18 @@ def get_basket(img):
 	return (int((xmin + xmax) / 2), int((ymin + ymax) / 2) + bask_window[0])
 
 if __name__ == '__main__':
-	img = cv2.imread(sys.argv[1], 0)
-	img = cv2.medianBlur(img, 5)
-	cimg = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+	img = cv2.imread(sys.argv[1], cv2.IMREAD_GRAYSCALE)
+	bimg = cv2.medianBlur(img, 5)
 
-	(ax, ay) = get_basket(img)
-	(bx, by) = get_ball(img)
+	(ax, ay) = get_basket(bimg)
+	(bx, by) = get_ball(bimg)
 
-	cv2.circle(cimg, (ax, ay), 10, (0, 0, 255), 10)
-	cv2.circle(cimg, (bx, by), 10, (0, 0, 255), 10)
+	with open(sys.argv[2], 'w') as f:
+		f.write(str(ax) + ' ' + str(ay) + '\n')
+		f.write(str(bx) + ' ' + str(by) + '\n')
 
-	cv2.imwrite(sys.argv[2], cimg)
-	os.system('kde-open ' + sys.argv[2])
+	# cv2.circle(bimg, (ax, ay), 10, (0, 0, 255), 10)
+	# cv2.circle(bimg, (int(bx), int(by)), 10, (0, 0, 255), 10)
+
+	# cv2.imwrite(sys.argv[2], bimg)
+	# os.system('kde-open ' + sys.argv[2])
