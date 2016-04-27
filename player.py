@@ -42,6 +42,7 @@ def advanced_delay(bx, device):
 	else:
 		delay = interv * bx / screenx - ballt
 	time.sleep(delay)
+	return 1
 
 
 def get_coords(img):
