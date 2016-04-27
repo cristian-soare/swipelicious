@@ -15,10 +15,9 @@ imgraw = wdir + spref + 'raw.png'
 cooraw = wdir + spref + 'coord.txt'
 
 def margin_time(x):
-	if x % 2 == 0:
-		print 'left',
-	else:
-		print 'right',
+	sides = ['left', 'right']
+	print sides[x % 2], '>',
+
 	if raw_input() == 'r':
 		return None
 	return time.time()
@@ -32,7 +31,7 @@ def advanced_delay(bx, device):
 	for i in range(1, 4):
 		t = margin_time(i + leftfirst)
 		if t is None:
-			return None
+			return False
 		intervals.append(t - start)
 		start = t
 	print
@@ -43,12 +42,13 @@ def advanced_delay(bx, device):
 	else:
 		delay = interv * bx / screenx - ballt
 	time.sleep(delay)
-	return 1
+
+	return True
+
 
 
 def get_coords(img):
 	img.writeToFile(imgraw, 'png')
-	print 'shot taken'
 
 	sp.call(['./vision.py', imgraw, cooraw])
 	f = open(cooraw, 'r')
@@ -79,6 +79,11 @@ def get_cool_coords():
 	print bx, by
 	return ax, ay, bx, by	
 
+	#time.sleep(1.5)
+	#print 'screen ...',
+	#img = device.takeSnapshot()
+	#print 'taken'
+	#return get_coords(img)
 
 
 if __name__ == '__main__':
@@ -86,7 +91,7 @@ if __name__ == '__main__':
 	device.drag((0,0), (1,1), duration, steps)
 
 	while True:
-		cmd = raw_input('State thy command: ')
+		cmd = raw_input('State thy command > ')
 		if cmd == '1':
 			for i in range(0, 10):
 				ax, ay, bx, by = reload(device)
@@ -96,7 +101,7 @@ if __name__ == '__main__':
 			device.drag((bx,by), (bx,ay), duration, steps)
 			ax, ay, bx, by = reload(device)
 		elif cmd == '3':
-			if advanced_delay(bx, device) is None:
+			if not advanced_delay(bx, device):
 				continue
 			device.drag((bx,by), (bx,ay), duration, steps)
 			ax, ay, bx, by = reload(device)

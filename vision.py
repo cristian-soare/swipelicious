@@ -2,17 +2,14 @@
 
 import os
 import sys
-
-import numpy as np
 import cv2
-import cv2.cv as cv
 
 ball_window = (1400, 1750)
 bask_window = (230, 1300)
 
 def get_ball(img):
 	img = img[ball_window[0]:ball_window[1], :]
-	circles = cv2.HoughCircles(img, cv.CV_HOUGH_GRADIENT, 1, 50, 
+	circles = cv2.HoughCircles(img, cv2.HOUGH_GRADIENT, 1, 50, 
 		param1=50, param2=30, 
 		minRadius=0, maxRadius=0)
 	return (int(circles[0][0][0]), int(circles[0][0][1] + ball_window[0]))
@@ -21,7 +18,7 @@ def get_basket(img):
 	img = img[bask_window[0]:bask_window[1],:]
 	edges = cv2.Canny(img, 50, 150, apertureSize=3)
 
-	contours, h = cv2.findContours(edges, 1, 2)
+	_,contours,_ = cv2.findContours(edges, 1, 2)
 	for cnt in contours:
 		approx = cv2.approxPolyDP(cnt, 0.01*cv2.arcLength(cnt, True), True)
 		if len(approx) == 4:
